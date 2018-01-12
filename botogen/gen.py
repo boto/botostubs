@@ -1,4 +1,5 @@
 import os
+import argparse
 
 from mypy_extensions import TypedDict
 from botocore.session import get_session
@@ -46,13 +47,14 @@ class StructureShape(Shape):
     def type_hint(self):
         return self.class_name
 
+
 class ListShape(Shape):
     def __init__(self, name, member_shape):
         super(ListShape, self).__init__(name)
         self.member_shape = member_shape
 
     def type_hint(self):
-        return 'List[%s]' % self.member_shape.type_hint
+        return 'List[%s]' % self.member_shape.type_hint()
 
 
 class MapShape(Shape):
@@ -63,7 +65,7 @@ class MapShape(Shape):
 
     def type_hint(self):
         return 'Dict[%s, %s]' % (
-            self.key_shape.type_hint, self.value_shape.type_hint
+            self.key_shape.type_hint(), self.value_shape.type_hint()
         )
 
 
@@ -90,6 +92,21 @@ class IntegerShape(Shape):
 class FloatShape(Shape):
     def type_hint(self):
         return 'float'
+
+
+class LongShape(Shape):
+    def type_hint(self):
+        return 'int'
+
+
+class DoubleShape(Shape):
+    def type_hint(self):
+        return 'float'
+
+
+class BooleanShape(Shape):
+    def type_hint(self):
+        return 'bool'
 
 
 class ServiceTypeGenerator(object):
@@ -196,27 +213,42 @@ class ServiceTypeGenerator(object):
     def _generate_float_shape(self, shape_model):
         return FloatShape(shape_model.name)
 
+    def _generate_double_shape(self, shape_model):
+        return DoubleShape(shape_model.name)
+
+    def _generate_long_shape(self, shape_model):
+        return LongShape(shape_model.name)
+
     def _generate_timestamp_shape(self, shape_model):
         return TimestampShape(shape_model.name)
 
+    def _generate_boolean_shape(self, shape_model):
+        return BooleanShape(shape_model.name)
 
-def render_client(client_class):
+
+def render_service_clients(service_names):
+    sess = get_session()
+    services = []
+    for service in service_names:
+        client = sess.create_client(service)
+        client_class = ServiceTypeGenerator(client).generate()
+        services.append(client_class)
+
     templates_dir = os.path.abspath(
         os.path.join(os.path.dirname(__file__), 'templates')
     )
     env = Environment(
         loader=FileSystemLoader(templates_dir)
     )
-    template = env.get_template('client.pyi.j2')
-    print(template.render(service=client_class))
+    template = env.get_template('hintfile.pyi.j2')
+    print(template.render(services=services))
 
 
 def main():
-    sess = get_session()
-    client = sess.create_client('sts')
-    generator = ServiceTypeGenerator(client)
-    client_class = generator.generate()
-    render_client(client_class)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('services', nargs='+')
+    args = parser.parse_args()
+    render_service_clients(args.services)
 
 
 if __name__ == "__main__":

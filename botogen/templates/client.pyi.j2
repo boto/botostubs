@@ -12,12 +12,11 @@ class {{ service.class_name }}(BaseClient):
             {%- endfor -%}
         {%- endif -%}
     )
-     {%- if operation.output_type -%}
-         -> {{ operation.output_type.type_hint() }}
+    {%- if operation.output_type -%}
+        {{ " -> " }}{{ operation.output_type.type_hint() }}
     {%- endif -%}
     : ...
     {% endfor %}
-
 {% for structure in service.structures %}
 {% include "structure.pyi.j2" %}
 
