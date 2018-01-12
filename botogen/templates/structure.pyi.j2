@@ -1,9 +1,9 @@
-{{ service.name }}{{ shape.name }} = TypedDict(
-    '{{ service.name }}{{ shape.name }}', {
-    {% for parameter in shape.required_parameters %}
-        {{ parameter.name }}: {{ paraemeter.type }},
-    {% endfor %}
-    {% for parameter in shape.optional_parameters %}
-        {{ parameter.name }}: Optional[{{ parameter.type }}],
-    {% endfor %}
+{{ structure.class_name }} = TypedDict(
+    '{{ structure.class_name }}', {
+    {%- for parameter in structure.required_params %}
+        {{ parameter.name }}: {{ parameter.type_hint() }},
+    {%- endfor -%}
+    {%- for parameter in structure.optional_params %}
+        {{ parameter.name }}: Optional[{{ parameter.type_hint() }}],
+    {%- endfor %}
 })

@@ -69,7 +69,7 @@ class MapShape(Shape):
 
 class StringShape(Shape):
     def type_hint(self):
-        return 'str'
+        return 'AnyStr'
 
 
 class TimestampShape(Shape):
@@ -107,7 +107,8 @@ class ServiceTypeGenerator(object):
             operation = self._generate_operation(method_name, operation_model)
             operations.append(operation)
 
-        structure_shapes = [s for s in self._shapes if isinstance(s, StructureShape)]
+        structure_shapes = [s for s in self._shapes.values()
+                            if isinstance(s, StructureShape)]
         return ClientClass(self._class_name, operations, structure_shapes)
 
     def _generate_operation(self, method_name, operation_model):
@@ -122,7 +123,7 @@ class ServiceTypeGenerator(object):
 
         output_model = operation_model.output_shape
         output_shape = None
-        if output_shape is not None:
+        if output_model is not None:
             output_shape = self._generate_shape(output_model)
 
         return ClientOperation(
