@@ -1,6 +1,8 @@
+import os
+
 from mypy_extensions import TypedDict
 from botocore.session import get_session
-from jinja2 import Environment, PackageLoader
+from jinja2 import Environment, FileSystemLoader
 
 
 class ClientClass(object):
@@ -26,13 +28,17 @@ class ClientParam(object):
 
 
 class Shape(object):
+    def __init__(self, name):
+        self.name = name
+
     @property
     def type_hint(self):
         raise NotImplementedError('type_hint')
 
 
 class StructureShape(Shape):
-    def __init__(self, class_name, required_params, optional_params):
+    def __init__(self, name, class_name, required_params, optional_params):
+        super(StructureShape, self).__init__(name)
         self.class_name = class_name
         self.required_params = required_params
         self.optional_params = optional_params
@@ -41,7 +47,8 @@ class StructureShape(Shape):
         return self.class_name
 
 class ListShape(Shape):
-    def __init__(self, member_shape):
+    def __init__(self, name, member_shape):
+        super(ListShape, self).__init__(name)
         self.member_shape = member_shape
 
     def type_hint(self):
@@ -49,7 +56,8 @@ class ListShape(Shape):
 
 
 class MapShape(Shape):
-    def __init__(self, key_shape, value_shape):
+    def __init__(self, name, key_shape, value_shape):
+        super(MapShape, self).__init__(name)
         self.key_shape = key_shape
         self.value_shape = value_shape
 
@@ -108,9 +116,9 @@ class ServiceTypeGenerator(object):
         optional_params = []
 
         if input_model is not None:
-            input_shape = self._generate_shape(input_model)
-            required_params = input_shape.required_params
-            optional_params = input_shape.optional_params
+            required_params, optional_params = self._generate_operation_input(
+                input_model
+            )
 
         output_model = operation_model.output_shape
         output_shape = None
@@ -124,6 +132,19 @@ class ServiceTypeGenerator(object):
             output_type=output_shape
         )
 
+    def _generate_operation_input(self, input_model):
+        required_params = []
+        optional_params = []
+        for param_name, param_model in input_model.members.items():
+            param_shape = self._generate_shape(param_model)
+            param = ClientParam(param_name, param_shape)
+
+            if param_name in input_model.required_members:
+                required_params.append(param)
+            else:
+                optional_params.append(param)
+
+        return required_params, optional_params
 
     def _generate_shape(self, shape_model):
         shape_name = shape_model.name
@@ -149,38 +170,44 @@ class ServiceTypeGenerator(object):
                 optional_members.append(member_shape)
 
         class_name = self._class_name + shape_model.name
-        return StructureShape(class_name, required_members, optional_members)
+        return StructureShape(
+            shape_model.name, class_name, required_members, optional_members
+        )
 
     def _generate_list_shape(self, shape_model):
         member_shape = self._generate_shape(shape_model.member)
-        return ListShape(member_shape)
+        return ListShape(shape_model.name, member_shape)
 
     def _generate_map_shape(self, shape_model):
         key_shape = self._generate_shape(shape_model.key)
         value_shape = self._generate_shape(shape_model.value)
-        return  MapShape(key_shape, value_shape)
+        return  MapShape(shape_model.name, key_shape, value_shape)
 
     def _generate_string_shape(self, shape_model):
-        return StringShape()
+        return StringShape(shape_model.name)
 
     def _generate_blob_shape(self, shape_model):
-        return BlobShape()
+        return BlobShape(shape_model.name)
 
     def _generate_integer_shape(self, shape_model):
-        return IntegerShape()
+        return IntegerShape(shape_model.name)
 
     def _generate_float_shape(self, shape_model):
-        return FloatShape()
+        return FloatShape(shape_model.name)
 
     def _generate_timestamp_shape(self, shape_model):
-        return TimestampShape()
+        return TimestampShape(shape_model.name)
 
 
 def render_client(client_class):
-    env = Environment(
-        loader=PackageLoader('templates')
+    templates_dir = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), 'templates')
     )
-    client_template = env.get_template('client.py')
+    env = Environment(
+        loader=FileSystemLoader(templates_dir)
+    )
+    template = env.get_template('client.pyi.j2')
+    print(template.render(service=client_class))
 
 
 def main():

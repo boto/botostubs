@@ -1,0 +1,8 @@
+class {{ service.class_name }}(BaseClient):
+    {% for operation in service.operations %}
+    def {{ operation.method_name }}(self
+        {%- for param in operation.required_params -%}
+            , {{ param.name }}: {{ param.type.type_hint() }}
+        {%- endfor -%}
+    ) -> {{ operation.output_type.type_hint() }}: ...
+    {% endfor %}
