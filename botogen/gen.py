@@ -71,7 +71,7 @@ class MapShape(Shape):
 
 class StringShape(Shape):
     def type_hint(self):
-        return 'AnyStr'
+        return 'str'
 
 
 class TimestampShape(Shape):
