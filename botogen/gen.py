@@ -1,5 +1,4 @@
 import os
-import argparse
 
 from mypy_extensions import TypedDict
 from botocore.session import get_session
@@ -242,14 +241,3 @@ def render_service_clients(service_names):
     )
     template = env.get_template('hintfile.pyi.j2')
     print(template.render(services=services))
-
-
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('services', nargs='+')
-    args = parser.parse_args()
-    render_service_clients(args.services)
-
-
-if __name__ == "__main__":
-    main()
