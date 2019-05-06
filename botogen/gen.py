@@ -14,8 +14,9 @@ class ClientClass(object):
 
 
 class ClientOperation(object):
-    def __init__(self, method_name, output_type, required_params,
-                 optional_params):
+    def __init__(
+        self, method_name, output_type, required_params, optional_params
+    ):
         self.method_name = method_name
         self.output_type = output_type
         self.required_params = required_params
@@ -34,7 +35,7 @@ class Shape(object):
 
     @property
     def type_hint(self):
-        raise NotImplementedError('type_hint')
+        raise NotImplementedError("type_hint")
 
 
 class StructureShape(Shape):
@@ -54,7 +55,7 @@ class ListShape(Shape):
         self.member_shape = member_shape
 
     def type_hint(self):
-        return 'List[%s]' % self.member_shape.type_hint()
+        return "List[%s]" % self.member_shape.type_hint()
 
 
 class MapShape(Shape):
@@ -64,49 +65,50 @@ class MapShape(Shape):
         self.value_shape = value_shape
 
     def type_hint(self):
-        return 'Dict[%s, %s]' % (
-            self.key_shape.type_hint(), self.value_shape.type_hint()
+        return "Dict[%s, %s]" % (
+            self.key_shape.type_hint(),
+            self.value_shape.type_hint(),
         )
 
 
 class StringShape(Shape):
     def type_hint(self):
-        return 'str'
+        return "str"
 
 
 class TimestampShape(Shape):
     def type_hint(self):
-        return 'datetime.datetime'
+        return "datetime.datetime"
 
 
 class BlobShape(Shape):
     def type_hint(self):
-        return 'bytes'
+        return "bytes"
 
 
 class IntegerShape(Shape):
     def type_hint(self):
-        return 'int'
+        return "int"
 
 
 class FloatShape(Shape):
     def type_hint(self):
-        return 'float'
+        return "float"
 
 
 class LongShape(Shape):
     def type_hint(self):
-        return 'int'
+        return "int"
 
 
 class DoubleShape(Shape):
     def type_hint(self):
-        return 'float'
+        return "float"
 
 
 class BooleanShape(Shape):
     def type_hint(self):
-        return 'bool'
+        return "bool"
 
 
 class ServiceTypeGenerator(object):
@@ -124,8 +126,9 @@ class ServiceTypeGenerator(object):
             operation = self._generate_operation(method_name, operation_model)
             operations.append(operation)
 
-        structure_shapes = [s for s in self._shapes.values()
-                            if isinstance(s, StructureShape)]
+        structure_shapes = [
+            s for s in self._shapes.values() if isinstance(s, StructureShape)
+        ]
         return ClientClass(self._class_name, operations, structure_shapes)
 
     def _generate_operation(self, method_name, operation_model):
@@ -147,7 +150,7 @@ class ServiceTypeGenerator(object):
             method_name=method_name,
             required_params=required_params,
             optional_params=optional_params,
-            output_type=output_shape
+            output_type=output_shape,
         )
 
     def _generate_operation_input(self, input_model):
@@ -169,9 +172,9 @@ class ServiceTypeGenerator(object):
         if shape_name in self._shapes:
             return self._shapes[shape_name]
 
-        fun = getattr(self, '_generate_%s_shape' % shape_model.type_name, None)
+        fun = getattr(self, "_generate_%s_shape" % shape_model.type_name, None)
         if fun is None:
-            raise Exception('Nothing doing for %s' % shape_model.type_name)
+            raise Exception("Nothing doing for %s" % shape_model.type_name)
 
         shape = fun(shape_model)
         self._shapes[shape_name] = shape
@@ -199,7 +202,7 @@ class ServiceTypeGenerator(object):
     def _generate_map_shape(self, shape_model):
         key_shape = self._generate_shape(shape_model.key)
         value_shape = self._generate_shape(shape_model.value)
-        return  MapShape(shape_model.name, key_shape, value_shape)
+        return MapShape(shape_model.name, key_shape, value_shape)
 
     def _generate_string_shape(self, shape_model):
         return StringShape(shape_model.name)
@@ -237,13 +240,11 @@ def render_service_clients(service_names=None):
             client_class = ServiceTypeGenerator(client).generate()
             services.append(client_class)
         except RecursionError:
-            sys.stderr.write('Recursion issue in %s\n' % service)
+            sys.stderr.write("Recursion issue in %s\n" % service)
 
     templates_dir = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), 'templates')
+        os.path.join(os.path.dirname(__file__), "templates")
     )
-    env = Environment(
-        loader=FileSystemLoader(templates_dir)
-    )
-    template = env.get_template('hintfile.pyi.j2')
+    env = Environment(loader=FileSystemLoader(templates_dir))
+    template = env.get_template("hintfile.pyi.j2")
     print(template.render(services=services))
