@@ -1,9 +1,0 @@
-import datetime
-
-from mypy_extensions import TypedDict
-from typing import Optional, AnyStr, Dict
-
-
-{% for service in services -%}
-{% include "client.pyi.j2" %}
-{% endfor %}

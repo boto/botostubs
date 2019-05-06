@@ -1,13 +1,24 @@
 import os
 import sys
+from pathlib import Path
 
 from mypy_extensions import TypedDict
 from botocore.session import get_session
 from jinja2 import Environment, FileSystemLoader
 
+import botogen
+
+
+# These services have parameters that are keywords
+BLACKLIST = [
+    'cloudsearchdomain',
+    'logs',
+]
+
 
 class ClientClass(object):
-    def __init__(self, class_name, operations, structures):
+    def __init__(self, service_name, class_name, operations, structures):
+        self.service_name = service_name
         self.class_name = class_name
         self.operations = operations
         self.structures = structures
@@ -129,7 +140,12 @@ class ServiceTypeGenerator(object):
         structure_shapes = [
             s for s in self._shapes.values() if isinstance(s, StructureShape)
         ]
-        return ClientClass(self._class_name, operations, structure_shapes)
+        return ClientClass(
+            self._client.meta.service_model.service_name,
+            self._class_name,
+            operations,
+            structure_shapes,
+        )
 
     def _generate_operation(self, method_name, operation_model):
         input_model = operation_model.input_shape
@@ -229,10 +245,38 @@ class ServiceTypeGenerator(object):
         return BooleanShape(shape_model.name)
 
 
-def render_service_clients(service_names=None):
+def render(service_names=None):
+    services = _get_service_structure(service_names)
+    templates_dir = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "templates")
+    )
+    env = Environment(loader=FileSystemLoader(templates_dir))
+
+    stubs_package = Path(botogen.__file__).parent.parent.parent
+    stubs_module = stubs_package / "botocore-stubs" / "botocore-stubs"
+
+    with open(stubs_module / "client.pyi", "w") as f:
+        f.write(render_client(services, env))
+    with open(stubs_module / "session.pyi", "w") as f:
+        f.write(render_session(services, env))
+
+
+def render_session(services, env):
+    template = env.get_template("session.pyi.j2")
+    return template.render(services=services)
+
+
+def render_client(services, env):
+    template = env.get_template("client.pyi.j2")
+    return template.render(services=services)
+
+
+def _get_service_structure(service_names=None):
     sess = get_session()
     if not service_names:
-        service_names = sess.get_available_services()
+        service_names = [s for s in sess.get_available_services() if s not in
+                         BLACKLIST]
+
     services = []
     for service in service_names:
         client = sess.create_client(service)
@@ -242,9 +286,4 @@ def render_service_clients(service_names=None):
         except RecursionError:
             sys.stderr.write("Recursion issue in %s\n" % service)
 
-    templates_dir = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "templates")
-    )
-    env = Environment(loader=FileSystemLoader(templates_dir))
-    template = env.get_template("hintfile.pyi.j2")
-    print(template.render(services=services))
+    return services

@@ -3,13 +3,10 @@ import os.path
 
 from setuptools import setup
 
-
 HERE = os.path.abspath(os.path.dirname(__file__))
-
 
 def read(*parts):
     return codecs.open(os.path.join(HERE, *parts), "r").read()
-
 
 setup(
     name="botocore-stubs",
@@ -26,7 +23,7 @@ setup(
     install_requires=read("requirements", "base.txt"),
     license="Apache License 2.0",
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        "Development Status :: 2 - Pre-Alpha",
         "Intended Audience :: Developers",
         "Intended Audience :: System Administrators",
         "Natural Language :: English",
