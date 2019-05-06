@@ -1,4 +1,5 @@
 import os
+import sys
 
 from mypy_extensions import TypedDict
 from botocore.session import get_session
@@ -225,13 +226,18 @@ class ServiceTypeGenerator(object):
         return BooleanShape(shape_model.name)
 
 
-def render_service_clients(service_names):
+def render_service_clients(service_names=None):
     sess = get_session()
+    if not service_names:
+        service_names = sess.get_available_services()
     services = []
     for service in service_names:
         client = sess.create_client(service)
-        client_class = ServiceTypeGenerator(client).generate()
-        services.append(client_class)
+        try:
+            client_class = ServiceTypeGenerator(client).generate()
+            services.append(client_class)
+        except RecursionError:
+            sys.stderr.write('Recursion issue in %s\n' % service)
 
     templates_dir = os.path.abspath(
         os.path.join(os.path.dirname(__file__), 'templates')
