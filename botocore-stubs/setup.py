@@ -10,7 +10,7 @@ def read(*parts):
 
 setup(
     name="botocore-stubs",
-    version="1.12.142",
+    version="0.0.1",
     description="Type hints for botocore.",
     long_description=read("README.rst"),
     author="Amazon Web Services",
