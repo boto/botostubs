@@ -197,14 +197,14 @@ class ServiceTypeGenerator(object):
         return shape
 
     def _generate_structure_shape(self, shape_model):
-        required_members = []
-        optional_members = []
+        required_members = {}
+        optional_members = {}
         for member_name, member_model in shape_model.members.items():
             member_shape = self._generate_shape(member_model)
             if member_name in shape_model.required_members:
-                required_members.append(member_shape)
+                required_members[member_name] = member_shape
             else:
-                optional_members.append(member_shape)
+                optional_members[member_name] = member_shape
 
         class_name = self._class_name + shape_model.name
         return StructureShape(

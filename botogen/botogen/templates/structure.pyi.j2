@@ -1,10 +1,10 @@
 {{ structure.class_name }} = TypedDict(
     '{{ structure.class_name }}', {
-    {%- for parameter in structure.required_params %}
-        '{{ parameter.name }}': {{ parameter.type_hint() }},
+    {%- for parameter_name, parameter_shape in structure.required_params.items() %}
+        '{{ parameter_name }}': {{ parameter_shape.type_hint() }},
     {%- endfor -%}
-    {%- for parameter in structure.optional_params %}
-        '{{ parameter.name }}': Optional[{{ parameter.type_hint() }}],
+    {%- for parameter_name, parameter_shape in structure.optional_params.items() %}
+        '{{ parameter_shape.name }}': Optional[{{ parameter_shape.type_hint() }}],
     {%- endfor %}
     }
 )
