@@ -10,10 +10,7 @@ import botogen
 
 
 # These services have parameters that are keywords
-BLACKLIST = [
-    'cloudsearchdomain',
-    'logs',
-]
+BLACKLIST = ["apigateway", "cloudsearchdomain", "health", "logs"]
 
 
 class ClientClass(object):
