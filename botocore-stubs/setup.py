@@ -5,8 +5,10 @@ from setuptools import setup
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
+
 def read(*parts):
     return codecs.open(os.path.join(HERE, *parts), "r").read()
+
 
 setup(
     name="botocore-stubs",
