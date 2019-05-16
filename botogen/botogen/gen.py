@@ -262,12 +262,12 @@ def render(service_names=None):
 
 def render_session(services, env):
     template = env.get_template("session.pyi.j2")
-    return template.render(services=services)
+    return template.render(services=services).strip() + "\n"
 
 
 def render_client(services, env):
     template = env.get_template("client.pyi.j2")
-    return template.render(services=services)
+    return template.render(services=services).strip() + "\n"
 
 
 def _get_service_structure(service_names=None):
