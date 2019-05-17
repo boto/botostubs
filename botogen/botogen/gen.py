@@ -10,10 +10,7 @@ import botogen
 
 
 # These services have parameters that are keywords
-BLACKLIST = [
-    'cloudsearchdomain',
-    'logs',
-]
+BLACKLIST = ["apigateway", "cloudsearchdomain", "health", "logs"]
 
 
 class ClientClass(object):
@@ -197,19 +194,21 @@ class ServiceTypeGenerator(object):
         return shape
 
     def _generate_structure_shape(self, shape_model):
-        required_members = {}
-        optional_members = {}
+        class_name = self._class_name + shape_model.name
+        shape = StructureShape(shape_model.name, class_name, {}, {})
+
+        # The structure shape is directly added to the cached shapes before it
+        # has its members generated to head of recursion errors.
+        self._shapes[shape_model.name] = shape
+
         for member_name, member_model in shape_model.members.items():
             member_shape = self._generate_shape(member_model)
             if member_name in shape_model.required_members:
-                required_members[member_name] = member_shape
+                shape.required_params[member_name] = member_shape
             else:
-                optional_members[member_name] = member_shape
+                shape.optional_params[member_name] = member_shape
 
-        class_name = self._class_name + shape_model.name
-        return StructureShape(
-            shape_model.name, class_name, required_members, optional_members
-        )
+        return shape
 
     def _generate_list_shape(self, shape_model):
         member_shape = self._generate_shape(shape_model.member)
@@ -274,16 +273,14 @@ def render_client(services, env):
 def _get_service_structure(service_names=None):
     sess = get_session()
     if not service_names:
-        service_names = [s for s in sess.get_available_services() if s not in
-                         BLACKLIST]
+        service_names = [
+            s for s in sess.get_available_services() if s not in BLACKLIST
+        ]
 
     services = []
     for service in service_names:
         client = sess.create_client(service)
-        try:
-            client_class = ServiceTypeGenerator(client).generate()
-            services.append(client_class)
-        except RecursionError:
-            sys.stderr.write("Recursion issue in %s\n" % service)
+        client_class = ServiceTypeGenerator(client).generate()
+        services.append(client_class)
 
     return services

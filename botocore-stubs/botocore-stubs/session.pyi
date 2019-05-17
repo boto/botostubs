@@ -70,21 +70,6 @@ class Session(object):
     @overload
     def create_client(
         self,
-        service_name: Literal["apigateway"],
-        region_name: Optional[str] = ...,
-        api_version: Optional[str] = ...,
-        use_ssl: bool = ...,
-        verify: bool = ...,
-        endpoint_url: Optional[str] = ...,
-        aws_access_key_id: Optional[str] = ...,
-        aws_secret_access_key: Optional[str] = ...,
-        aws_session_token: Optional[str] = ...,
-        config: Optional[botocore.config.Config] = ...,
-    ) -> "botocore.client.APIGateway": ...
-
-    @overload
-    def create_client(
-        self,
         service_name: Literal["apigatewaymanagementapi"],
         region_name: Optional[str] = ...,
         api_version: Optional[str] = ...,
@@ -261,6 +246,21 @@ class Session(object):
         aws_session_token: Optional[str] = ...,
         config: Optional[botocore.config.Config] = ...,
     ) -> "botocore.client.Budgets": ...
+
+    @overload
+    def create_client(
+        self,
+        service_name: Literal["ce"],
+        region_name: Optional[str] = ...,
+        api_version: Optional[str] = ...,
+        use_ssl: bool = ...,
+        verify: bool = ...,
+        endpoint_url: Optional[str] = ...,
+        aws_access_key_id: Optional[str] = ...,
+        aws_secret_access_key: Optional[str] = ...,
+        aws_session_token: Optional[str] = ...,
+        config: Optional[botocore.config.Config] = ...,
+    ) -> "botocore.client.CostExplorer": ...
 
     @overload
     def create_client(
@@ -760,6 +760,36 @@ class Session(object):
     @overload
     def create_client(
         self,
+        service_name: Literal["dynamodb"],
+        region_name: Optional[str] = ...,
+        api_version: Optional[str] = ...,
+        use_ssl: bool = ...,
+        verify: bool = ...,
+        endpoint_url: Optional[str] = ...,
+        aws_access_key_id: Optional[str] = ...,
+        aws_secret_access_key: Optional[str] = ...,
+        aws_session_token: Optional[str] = ...,
+        config: Optional[botocore.config.Config] = ...,
+    ) -> "botocore.client.DynamoDB": ...
+
+    @overload
+    def create_client(
+        self,
+        service_name: Literal["dynamodbstreams"],
+        region_name: Optional[str] = ...,
+        api_version: Optional[str] = ...,
+        use_ssl: bool = ...,
+        verify: bool = ...,
+        endpoint_url: Optional[str] = ...,
+        aws_access_key_id: Optional[str] = ...,
+        aws_secret_access_key: Optional[str] = ...,
+        aws_session_token: Optional[str] = ...,
+        config: Optional[botocore.config.Config] = ...,
+    ) -> "botocore.client.DynamoDBStreams": ...
+
+    @overload
+    def create_client(
+        self,
         service_name: Literal["ec2"],
         region_name: Optional[str] = ...,
         api_version: Optional[str] = ...,
@@ -906,6 +936,21 @@ class Session(object):
         aws_session_token: Optional[str] = ...,
         config: Optional[botocore.config.Config] = ...,
     ) -> "botocore.client.ElasticLoadBalancingv2": ...
+
+    @overload
+    def create_client(
+        self,
+        service_name: Literal["emr"],
+        region_name: Optional[str] = ...,
+        api_version: Optional[str] = ...,
+        use_ssl: bool = ...,
+        verify: bool = ...,
+        endpoint_url: Optional[str] = ...,
+        aws_access_key_id: Optional[str] = ...,
+        aws_secret_access_key: Optional[str] = ...,
+        aws_session_token: Optional[str] = ...,
+        config: Optional[botocore.config.Config] = ...,
+    ) -> "botocore.client.EMR": ...
 
     @overload
     def create_client(
@@ -1071,21 +1116,6 @@ class Session(object):
         aws_session_token: Optional[str] = ...,
         config: Optional[botocore.config.Config] = ...,
     ) -> "botocore.client.GuardDuty": ...
-
-    @overload
-    def create_client(
-        self,
-        service_name: Literal["health"],
-        region_name: Optional[str] = ...,
-        api_version: Optional[str] = ...,
-        use_ssl: bool = ...,
-        verify: bool = ...,
-        endpoint_url: Optional[str] = ...,
-        aws_access_key_id: Optional[str] = ...,
-        aws_secret_access_key: Optional[str] = ...,
-        aws_session_token: Optional[str] = ...,
-        config: Optional[botocore.config.Config] = ...,
-    ) -> "botocore.client.Health": ...
 
     @overload
     def create_client(
@@ -1720,6 +1750,21 @@ class Session(object):
     @overload
     def create_client(
         self,
+        service_name: Literal["organizations"],
+        region_name: Optional[str] = ...,
+        api_version: Optional[str] = ...,
+        use_ssl: bool = ...,
+        verify: bool = ...,
+        endpoint_url: Optional[str] = ...,
+        aws_access_key_id: Optional[str] = ...,
+        aws_secret_access_key: Optional[str] = ...,
+        aws_session_token: Optional[str] = ...,
+        config: Optional[botocore.config.Config] = ...,
+    ) -> "botocore.client.Organizations": ...
+
+    @overload
+    def create_client(
+        self,
         service_name: Literal["pi"],
         region_name: Optional[str] = ...,
         api_version: Optional[str] = ...,
@@ -1851,6 +1896,21 @@ class Session(object):
         aws_session_token: Optional[str] = ...,
         config: Optional[botocore.config.Config] = ...,
     ) -> "botocore.client.RDS": ...
+
+    @overload
+    def create_client(
+        self,
+        service_name: Literal["rds-data"],
+        region_name: Optional[str] = ...,
+        api_version: Optional[str] = ...,
+        use_ssl: bool = ...,
+        verify: bool = ...,
+        endpoint_url: Optional[str] = ...,
+        aws_access_key_id: Optional[str] = ...,
+        aws_secret_access_key: Optional[str] = ...,
+        aws_session_token: Optional[str] = ...,
+        config: Optional[botocore.config.Config] = ...,
+    ) -> "botocore.client.RDSDataService": ...
 
     @overload
     def create_client(
@@ -2001,6 +2061,21 @@ class Session(object):
         aws_session_token: Optional[str] = ...,
         config: Optional[botocore.config.Config] = ...,
     ) -> "botocore.client.S3Control": ...
+
+    @overload
+    def create_client(
+        self,
+        service_name: Literal["sagemaker"],
+        region_name: Optional[str] = ...,
+        api_version: Optional[str] = ...,
+        use_ssl: bool = ...,
+        verify: bool = ...,
+        endpoint_url: Optional[str] = ...,
+        aws_access_key_id: Optional[str] = ...,
+        aws_secret_access_key: Optional[str] = ...,
+        aws_session_token: Optional[str] = ...,
+        config: Optional[botocore.config.Config] = ...,
+    ) -> "botocore.client.SageMaker": ...
 
     @overload
     def create_client(
@@ -2226,6 +2301,21 @@ class Session(object):
         aws_session_token: Optional[str] = ...,
         config: Optional[botocore.config.Config] = ...,
     ) -> "botocore.client.SQS": ...
+
+    @overload
+    def create_client(
+        self,
+        service_name: Literal["ssm"],
+        region_name: Optional[str] = ...,
+        api_version: Optional[str] = ...,
+        use_ssl: bool = ...,
+        verify: bool = ...,
+        endpoint_url: Optional[str] = ...,
+        aws_access_key_id: Optional[str] = ...,
+        aws_secret_access_key: Optional[str] = ...,
+        aws_session_token: Optional[str] = ...,
+        config: Optional[botocore.config.Config] = ...,
+    ) -> "botocore.client.SSM": ...
 
     @overload
     def create_client(
