@@ -7,6 +7,12 @@ static type analysis and for dot completion support. The latter is relevant
 because botocore's classes don't exist until runtime, and therefore IDEs cannot
 know all the methods that will be available without this.
 
+.. note::
+
+  This project is currently a work in-progress and is not yet intended for
+  production.
+
+
 Installation / Usage
 --------------------
 
