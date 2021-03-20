@@ -1,4 +1,4 @@
 mypy-extensions==0.4.1
 typing-extensions==3.7.2
 boto3
-Jinja2==2.10.1
+Jinja2==2.11.3
